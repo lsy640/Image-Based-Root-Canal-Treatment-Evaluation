@@ -122,8 +122,6 @@ pip install -r requirements.txt
 
 ### 已知问题
 
-- **中文路径下 Qt 插件找不到**：如果项目路径包含中文字符，可能出现 `no Qt platform plugin could be initialized` 错误。`main.py` 中已添加修复代码，自动设置 `QT_QPA_PLATFORM_PLUGIN_PATH` 环境变量。
-- **albumentations 形状检查**：图像和掩膜尺寸不一致时，`Compose` 可能报 `ValueError`。代码中已通过 `is_check_shapes=False` 参数解决。
 - **GUI 界面未做自动缩放**：当前界面在 Windows 系统下以 100% 缩放创建，如遇字体不显示或显示不全的问题，请调整系统显示缩放比例。macOS 系统下也可能存在字体显示不全的问题。
 
 ## 使用说明
