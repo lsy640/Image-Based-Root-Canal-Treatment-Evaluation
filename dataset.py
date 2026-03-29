@@ -52,18 +52,19 @@ class Dataset(torch.utils.data.Dataset):
     def __len__(self):
         return len(self.img_ids)
 
-    def cv_imread(file_path):
-        cv_img = cv2.imdecode(np.fromfile(file_path, dtype = np.uint8), -1)
+    @staticmethod
+    def cv_imread(file_path, flags=cv2.IMREAD_COLOR):
+        cv_img = cv2.imdecode(np.fromfile(file_path, dtype=np.uint8), flags)
         return cv_img
 
     def __getitem__(self, idx):
         img_id = self.img_ids[idx]
-        
-        img = cv2.imread(os.path.join(self.img_dir, img_id + self.img_ext))
+
+        img = self.cv_imread(os.path.join(self.img_dir, img_id + self.img_ext))
 
         mask = []
         for i in range(self.num_classes):
-            mask.append(cv2.imread(os.path.join(self.mask_dir, str(i),
+            mask.append(self.cv_imread(os.path.join(self.mask_dir, str(i),
                                                     img_id + self.mask_ext), cv2.IMREAD_GRAYSCALE)[..., None])
         #数组沿深度方向进行拼接。
         mask = np.dstack(mask)

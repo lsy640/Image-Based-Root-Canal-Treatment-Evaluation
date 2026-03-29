@@ -145,8 +145,8 @@ class Unet_Thread(QThread):
         model.train()
         step = 0
         for input, target, _ in train_loader:
-            input = input.cuda()
-            target = target.cuda()
+            input = input.to(self.device)
+            target = target.to(self.device)
 
             # compute output
             if config['deep_supervision']:
@@ -190,8 +190,8 @@ class Unet_Thread(QThread):
         step = 0
         with torch.no_grad():
             for input, target, _ in val_loader:
-                input = input.cuda()
-                target = target.cuda()
+                input = input.to(self.device)
+                target = target.to(self.device)
 
                 # compute output
                 if config['deep_supervision']:
@@ -225,6 +225,9 @@ class Unet_Thread(QThread):
     def run(self):
         config = vars(self.parse_args())
 
+        self.device = torch.device('cuda' if torch.cuda.is_available() else 'cpu')
+        print("Using device:", self.device)
+
         if config['name'] is None:
             if config['deep_supervision']:
                 config['name'] = '%s_%s_wDS' % (config['dataset'], config['arch'])
@@ -242,11 +245,12 @@ class Unet_Thread(QThread):
 
         # define loss function (criterion)
         if config['loss'] == 'BCEWithLogitsLoss':
-            criterion = nn.BCEWithLogitsLoss().cuda()  # WithLogits 就是先将输出结果经过sigmoid再交叉熵
+            criterion = nn.BCEWithLogitsLoss().to(self.device)
         else:
-            criterion = losses.__dict__[config['loss']]().cuda()
+            criterion = losses.__dict__[config['loss']]().to(self.device)
 
-        cudnn.benchmark = True
+        if torch.cuda.is_available():
+            cudnn.benchmark = True
 
         # create model
         print("=> creating model %s" % config['arch'])
@@ -254,7 +258,7 @@ class Unet_Thread(QThread):
                                                config['input_channels'],
                                                config['deep_supervision'])
 
-        model = model.cuda()
+        model = model.to(self.device)
 
         params = filter(lambda p: p.requires_grad, model.parameters())
         if config['optimizer'] == 'Adam':
@@ -289,7 +293,8 @@ class Unet_Thread(QThread):
         # 数据增强：
         train_transform = Compose([
             A.RandomRotate90(),
-            A.Flip(),
+            A.HorizontalFlip(),
+            A.VerticalFlip(),
             OneOf([
                 transforms.HueSaturationValue(),
                 transforms.RandomBrightnessContrast(),
@@ -387,6 +392,7 @@ class Unet_Thread(QThread):
                 break
 
             self.finishSignal.emit(epoch + 1)
-            torch.cuda.empty_cache()
+            if torch.cuda.is_available():
+                torch.cuda.empty_cache()
 
 
