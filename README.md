@@ -124,6 +124,7 @@ pip install -r requirements.txt
 
 - **Qt plugin not found with non-ASCII paths**: If the project path contains non-ASCII characters (e.g., Chinese), you may encounter a `no Qt platform plugin could be initialized` error. A fix has been added in `main.py` that automatically sets the `QT_QPA_PLATFORM_PLUGIN_PATH` environment variable.
 - **albumentations shape check**: When image and mask dimensions are inconsistent, `Compose` may raise a `ValueError`. This has been resolved in the code by setting `is_check_shapes=False`.
+- **GUI scaling not adaptive**: The GUI was designed at 100% display scaling on Windows. If text appears truncated or missing, try adjusting the system display scaling factor. On macOS, font display issues may also occur due to scaling differences.
 
 ## Usage
 
