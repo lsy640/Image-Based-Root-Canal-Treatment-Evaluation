@@ -13,9 +13,6 @@ __pycache__/
 # Claude Code
 .claude/
 
-# Model weights (too large for GitHub, download separately)
-*.pth
-
 # OS files
 Thumbs.db
 .DS_Store
