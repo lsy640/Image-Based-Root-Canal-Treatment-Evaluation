@@ -1,3 +1,5 @@
+**[中文版](README_CN.md) | English**
+
 # Image-Based Root Canal Treatment Evaluation System
 
 This project is a deep learning-based automatic evaluation system for root canal treatment outcomes. The system performs image segmentation and classification on periapical radiographs to automatically assess the quality of root canal filling, outputting evaluation results in four grades (A/B/C/D). A visual GUI built with PyQt5 supports one-click evaluation and model training.
